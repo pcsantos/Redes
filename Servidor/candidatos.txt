@@ -1,0 +1,10 @@
+2|brancos|sem partido|0|
+3|nulos|sem partido|0|
+45|Ken|USA|0|
+19|Ryu|JPN|0|
+11|E. Honda|JPN|0|
+15|Blanka|BRA|0|
+21|Dhalsim|IND|0|
+18|Guile|USA|0|
+13|Zangief|RUS|0|
+25|Chun-Li|CHN|0|

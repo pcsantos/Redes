@@ -1,0 +1,15 @@
+boas...
+Fiz as seguintes alterações.
+Para rodar o Servidor agora é necessário especificar a porta.
+Assim fica mais genérico.
+Para rodar o Servidor:
+$ java Servidor 40007
+
+Para rodar a Urna é necessário especificar servidor e porta.
+# Dentro do Cluster
+$ java Urna frontend 40007
+ou 
+# Fora do Cluster
+$ java Urna cosmos.lasdpc.icmc.usp.br 40007
+
+Alterei o nome das variavéis.
