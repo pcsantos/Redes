@@ -8,16 +8,8 @@ public class Servidor {
 	private static final String ARQUIVO_FINAL = "urnas_apuradas.txt";
 
 	public static void main(String[] args) throws IOException {
-
-        if(args.length != 1) {
-            System.out.println("Nro de parametros incorreto!");
-            System.out.println("Para rodar o Servidor corretamente utilize: java Servidor [porta]");
-            System.exit(1);
-        }
-        int porta = Integer.parseInt(args[0]);
-
 		System.out.println("#### Servidor em Funcionamento ####");
-		ServerSocket serverSocket = new ServerSocket(porta);
+		ServerSocket serverSocket = new ServerSocket(40007);
 		try {
 			while (true) {
 				Socket socket = serverSocket.accept();
@@ -36,25 +28,32 @@ public class Servidor {
 		Thread thread = new Thread() {
 			public void run() {
 				try {
-
+										
 					BufferedReader buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+					
 					// Recebe código do cliente
 					String codigo = buffReader.readLine();
+					
+					
+	
 					if (codigo.equals("999")) {
 						enviarListaCandidatos();	
 					}
 					if (codigo.equals("888")) {
 					// Recebe Votação finalizada de uma urna
-						receberVotosUrna();
+						receberVotosUrna(buffReader);
 						System.out.println("\n#### Urnas Apuradas até o momento ####\n");
 						gerarStatus();
 						System.out.println("\nAguardando mais urnas finalizarem a votação...\n");
 					}
-
+					
+					
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
 					try {
+						
 						socket.close();
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -67,32 +66,61 @@ public class Servidor {
 					OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
 					BufferedReader buffReader = new BufferedReader(new FileReader(ARQUIVO_CANDIDATOS));
 					String linha;
-					while((linha = buffReader.readLine()) != null) {
-						writer.write(linha + "\n");
-						writer.flush();
+					boolean final_do_arquivo = false;
+					String mensagem_arquivo = "";
+					
+					while(!final_do_arquivo){
+						while((linha = buffReader.readLine()) != null) {
+							mensagem_arquivo= mensagem_arquivo + linha + "\n";
+						}
+						final_do_arquivo = mensagem_arquivo.contains("Chun");
+						if(final_do_arquivo){
+							writer.write(mensagem_arquivo);
+							writer.flush();
+						}
 					}
+
+					writer.close();
 					buffReader.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 
-			private void receberVotosUrna() {
+			private void receberVotosUrna(BufferedReader buffReader) {
 				
+				boolean final_da_mensagem = false;
 				try {
 					BufferedWriter buffWriter = new BufferedWriter(new FileWriter(ARQUIVO_FINAL, true));
-					BufferedReader buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 					String linha;
-					String urna = " " + socket.getInetAddress();
-					buffWriter.append(urna + "\n");
-					while((linha = buffReader.readLine()) != null) {
-						buffWriter.append(linha + "\n");
+					String urna = " " + socket.getInetAddress()+"\n";
+					int count = 0;
+					
+					while(!final_da_mensagem && count<3){
+						
+						while((linha = buffReader.readLine()) != null) {
+							urna= urna + linha + "\n";
+							
+						}
+						final_da_mensagem = urna.contains("Chun");
+						if(final_da_mensagem){
+							
+							buffWriter.append(urna);
+							buffWriter.flush();
+						}
+						if(final_da_mensagem == false){
+							Thread.sleep(500);
+							count++;
+						}
 					}
+
+					if(count == 3){System.out.println("Connection Timeout(1,5s) com ip: " + socket.getInetAddress());}
+
 					buffReader.close();
 					buffWriter.close();
 				} catch (IOException e) {
 					e.printStackTrace();
-				}
+				}catch(InterruptedException e){}
 			}
 		};
 		thread.start();

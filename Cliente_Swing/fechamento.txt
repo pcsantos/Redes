@@ -1,5 +1,5 @@
-2|brancos|sem partido|0|
-3|nulos|sem partido|1|
+2|brancos|sem partido|1|
+3|nulos|sem partido|0|
 45|Ken|USA|1|
 19|Ryu|JPN|0|
 11|E. Honda|JPN|0|

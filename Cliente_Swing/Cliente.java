@@ -6,10 +6,10 @@ public class Cliente {
 
 	private Socket socket;
 
-    public Cliente(String servidor, int porta) {
-        
-		try { 
-			this.socket = new Socket(servidor, porta);
+	public Cliente() {
+
+		try {	//Rodar servidor no nó Maia
+			this.socket = new Socket("maia", 40007);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
